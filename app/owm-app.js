@@ -1,10 +1,10 @@
 angular
-    .module('OWMApp', ['ngRoute'])
+    .module('OWMApp', ['ngRoute', 'ngAnimate'])
     .value('owmCities', ['New York', 'Dallas', 'Chicago'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/', {
                 templateUrl: 'home.html',
-                controller: 'HomeCtrl'
+                controller: 'HomeCtrl as home'
             })
             .when('/city/:city', {
                 templateUrl: 'city.html',
@@ -17,8 +17,17 @@ angular
             })
             .otherwise('/error');
     }])
-    .run(function($rootScope, $location) {
+    .run(function($rootScope, $location, $timeout) {
         $rootScope.$on('$routeChangeError', function() {
             $location.path('/error');
         });
-    })
+        $rootScope.$on('$routeChangeStart', function() {
+        $rootScope.isLoading = true;
+    });
+    $rootScope.$on('$routeChangeSuccess', function() {
+      $timeout(function() {
+        $rootScope.isLoading = false;
+      }, 1000);
+    });
+})
+  
